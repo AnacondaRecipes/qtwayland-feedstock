@@ -1,76 +1,66 @@
-{% set version = "5.15.15" %}
+{% set name = "qtwayland" %}
+{% set version = "6.9.1" %}
+
 package:
-  name: qt-wayland
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://download.qt.io/official_releases/qt/{{ version.rpartition('.')[0] }}/{{ version }}/submodules/qtwayland-everywhere-opensource-src-{{ version }}.tar.xz
-  sha256: bd1b577ec2311c0f615ca4a21aeb108a0b1b5e112c94191ff709cec814599b51
+  url: https://download.qt.io/official_releases/qt/{{ version.rpartition('.')[0] }}/{{ version }}/submodules/{{ name }}-everywhere-src-{{ version }}.tar.xz
+  sha256: 7d21ea0e687180ebb19b9a1f86ae9cfa7a25b4f02d5db05ec834164409932e3e
 
 build:
-  skip: true  # [not linux]
   number: 0
+  skip: true  # [not linux]
   detect_binary_files_with_prefix: true
   run_exports:
-    - {{ pin_subpackage('qt-wayland', max_pin='x.x') }}
+    - {{ pin_subpackage(name, max_pin='x.x') }}
 
 requirements:
   build:
-    - perl
-    - make
-    - {{ compiler('cxx') }}
-    - {{ compiler('c') }}
     - {{ stdlib('c') }}
-    - qt-main                            # [build_platform != target_platform]
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+    - ninja
+    - perl
   host:
-    - qt-main  {{ version }}
-    - libgl-devel
-    - libegl-devel
-    - libdrm
-    - wayland
-    - fontconfig
-    - freetype
-    - zlib
-    - glib
-    # The following X11 dependencies are only needed to build
-    # the features
-    #   XComposite EGL ......................... yes
-    #   XComposite GLX ......................... yes
-    # But these are being removed in qt 6, so it doesn't seem
-    # worthwhile to build them for conda-forge in 2023
-    # https://codereview.qt-project.org/c/qt/qtwayland/+/380604
-    #
-    # But.... they seem to get pulled in accidentally from qt-main
-    # since qt-main is currently built with full X11 support
-    # So for now, it doesn't really hurt to include them
-    - libxkbcommon
-    - xorg-libx11
-    - xorg-libxext
-    - xorg-libxrandr
-    - xorg-libxcomposite
-    - xorg-xorgproto
-  run:
-    # Needs a run export?
-    - xorg-libxcomposite
+    # https://doc.qt.io/qt-6/wayland-requirements.html
+    - qtbase-devel {{ version }}
+    - qtdeclarative {{ version }}
+    - qtsvg {{ version }}
+    - wayland {{ wayland }}
+    - libegl-devel {{ libgl }}
+    - libglx-devel {{ libglx }}
+    - libopengl-devel {{ libopengl }}
+    - libvulkan-headers {{ libvulkan }}
+    - libvulkan-loader {{ libvulkan }}
+    - libxkbcommon {{ libxkbcommon }}
+  run_constrained:
+    - qt-main >={{ version }},<7
+    - qt >={{ version }},<7
 
 test:
   commands:
     {% set qt_libs = ["WaylandClient", "WaylandCompositor"] %}
     {% for each_qt_lib in qt_libs %}
-    - test -d $PREFIX/include/qt/Qt{{ each_qt_lib }}  # [unix]
-    - test -f $PREFIX/lib/libQt5{{ each_qt_lib }}${SHLIB_EXT}  # [unix]
+    - test -d $PREFIX/include/qt6/Qt{{ each_qt_lib }}  # [unix]
+    - test -f $PREFIX/lib/libQt6{{ each_qt_lib }}${SHLIB_EXT}  # [unix]
     {% endfor %}
 
 about:
-  home: http://qt-project.org
+  home: https://www.qt.io/
   license: LGPL-3.0-only
+  license_family: LGPL
   license_file:
-    - LICENSE.FDL
-    - LICENSE.GPL2
-    - LICENSE.GPL3
-    - LICENSE.GPL3-EXCEPT
-    - LICENSE.LGPL3
-  summary: QtWayland module
+    - LICENSES/BSD-3-Clause.txt
+    - LICENSES/GFDL-1.3-no-invariants-only.txt
+    - LICENSES/GPL-2.0-only.txt
+    - LICENSES/GPL-3.0-only.txt
+    - LICENSES/LGPL-3.0-only.txt
+    - LICENSES/LicenseRef-Qt-Commercial.txt
+    - LICENSES/Qt-GPL-exception-1.0.txt
+  summary: Cross-platform application and UI framework ({{ name[2:] }} libraries).
   description: |
     The QtWayland module consists of two parts.
 
@@ -79,12 +69,10 @@ about:
 
     QtWaylandCompositor API --
         Enables the creation of Wayland compositors using Qt and QtQuick.
-  doc_url: https://wiki.qt.io/QtWayland
-  dev_url: https://github.com/qt/qtwayland/tree/5.15
+  doc_url: https://doc.qt.io/qt-6/wayland-and-qt.html
+  dev_url: https://github.com/qt/{{ name }}
 
 extra:
   feedstock-name: qt-wayland
   recipe-maintainers:
     - hmaarrfk
-    # qt-main added to help in case of any critical fixes or routine upgrades
-    - conda-forge/qt-main
