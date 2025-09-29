@@ -10,9 +10,10 @@ source:
   sha256: cad79806565568f12f9983fed69219416abcee9d5deef4abdfcf94aa2eef7781
 
 build:
-  number: 0
+  number: 1
   skip: true  # [not linux]
   detect_binary_files_with_prefix: true
+  # https://doc.qt.io/qt-6/qt-releases.html#binary-compatibility
   run_exports:
     - {{ pin_subpackage(name, max_pin='x.x') }}
 
@@ -36,9 +37,6 @@ requirements:
     - libvulkan-headers {{ libvulkan }}
     - libvulkan-loader {{ libvulkan }}
     - libxkbcommon {{ libxkbcommon }}
-  run_constrained:
-    - qt-main >={{ version }},<7
-    - qt >={{ version }},<7
 
 test:
   commands:
