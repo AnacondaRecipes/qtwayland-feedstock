@@ -1,5 +1,5 @@
 {% set name = "qtwayland" %}
-{% set version = "6.10.2" %}
+{% set version = "6.11.0" %}
 
 package:
   name: {{ name }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://download.qt.io/official_releases/qt/{{ version.rpartition('.')[0] }}/{{ version }}/submodules/{{ name }}-everywhere-src-{{ version }}.tar.xz
-  sha256: 391998eb432719df26a6a67d8efdc67f8bf2afdd76c1ee3381ebff4fe7527ee2
+  sha256: e710e6e760f92922b86e4dd68f6bbe94ef6510919519d1b0068e874b5ad84d37
   patches:
     # Fix get_target_property() called with non-existent target "Qt6::WaylandGlobalPrivate" -> Qt's build system expects
     # WaylandGlobalPrivate to already be available when qt_internal_add_module() runs.
