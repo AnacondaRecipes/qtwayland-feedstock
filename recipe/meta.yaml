@@ -15,7 +15,7 @@ source:
     - patches/0002-Fix-internal-target-exports-in-Wayland-modules.patch
 
 build:
-  number: 0
+  number: 1
   skip: true  # [not linux]
   detect_binary_files_with_prefix: true
   # https://doc.qt.io/qt-6/qt-releases.html#binary-compatibility
